@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if messages %}
+
+<ul class="messages">
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+
+        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}{% endif %}
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+
+    </div>
+    {% endfor %}
+</ul>
+{% endif %}
+
+<script>
+document.addEventListener('DOMContentLoaded', (event) => {
+    const alerts = document.querySelectorAll('.alert');
+    alerts.forEach((alert) => {
+        setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        }, 4000); // Closes the alert after 4 seconds
+    });
+});
+</script>
+{% endblock %}
