@@ -36,7 +36,7 @@ class RegistrationForm(forms.ModelForm):
             "phone_number": "Enter Phone Number",
             "email": "Enter Email",
             "password": "Enter Password",
-            "confirm_password": "Cofirm Password",
+            "confirm_password": "Confirm Password",
         }
 
         field_ids = {

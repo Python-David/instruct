@@ -1,6 +1,6 @@
 from django.db import models
 
-from instruct.curriculum.models import Lesson
+from curriculum.models import Lesson
 
 
 class Resource(models.Model):

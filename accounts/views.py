@@ -1,8 +1,11 @@
+from datetime import timedelta
+
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.utils import timezone
 from django.utils.http import urlsafe_base64_decode
 
 from .config import LOGIN_ERROR_MESSAGE, LOGIN_SUCCESS_MESSAGE, ACCOUNT_ACTIVATION_SUBJECT, \
@@ -12,6 +15,7 @@ from .config import LOGIN_ERROR_MESSAGE, LOGIN_SUCCESS_MESSAGE, ACCOUNT_ACTIVATI
 from .forms import RegistrationForm
 from .models import Account
 from .utils import send_email
+from scheduling.models import Schedule
 
 
 def login(request):
@@ -28,7 +32,38 @@ def login(request):
 
     auth.login(request, user)
     messages.success(request, LOGIN_SUCCESS_MESSAGE)
-    return redirect("home")
+    return redirect("dashboard")
+
+
+@login_required(login_url="login")
+def dashboard(request):
+    # Fetch today's date, adjusted for the current timezone
+    today = timezone.localdate()
+
+    # Fetch today's lessons for the logged-in user
+    todays_lessons = Schedule.objects.filter(scheduled_date=today).select_related('lesson', 'lesson__subject')
+
+    # Calculate the start (Monday) and end (Sunday) of the week
+    start_week = today - timedelta(days=today.weekday())  # Monday
+    end_week = start_week + timedelta(days=6)  # Sunday
+
+    # Fetch lessons for the week and format the dates
+    weekly_lessons = Schedule.objects.filter(scheduled_date__range=[start_week, end_week]).select_related('lesson', 'lesson__subject')
+    formatted_weekly_lessons = [
+        {
+            'formatted_date': lesson.scheduled_date.strftime("%A, %b. %d, %Y"),
+            'lesson_title': lesson.lesson.title,
+            'subject_name': lesson.lesson.subject.name
+        }
+        for lesson in weekly_lessons
+    ]
+
+    # Pass formatted_weekly_lessons to the template
+    context = {
+        'todays_lessons': todays_lessons,  # Assuming you'll handle today's lessons similarly or leave as is
+        'weekly_lessons': formatted_weekly_lessons,
+    }
+    return render(request, "accounts/dashboard.html", context)
 
 
 def register(request):

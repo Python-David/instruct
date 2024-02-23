@@ -2,19 +2,291 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login</title>
-    <!-- MDB CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/5.0.0/mdb.min.css" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeSchool Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Pacifico&display=swap"
+          rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <!-- Custom CSS for additional styling -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f8f9fa;
+        }
+        h1, h2, h3 {
+            font-family: 'Pacifico', cursive;
+        }
+        .navbar-brand {
+            font-family: 'Pacifico', cursive;
+        }
+        .card {
+            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+            transition: 0.3s;
+        }
+        .card:hover {
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+        }
+        .card-header {
+            background-color: #ffcccb;
+            color: #333;
+        }
+        /* Add more custom styles as needed */
+
+                /* Timeline Styles */
+        .timeline {
+            border-left: 2px solid #ffcccb;
+            border-radius: 1rem;
+            padding: 10px;
+        }
+        .timeline-item {
+            margin-bottom: 20px;
+            padding-left: 20px;
+            position: relative;
+        }
+        .timeline-item:before {
+            content: "";
+            position: absolute;
+            left: -6px;
+            top: 0;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ffcccb;
+        }
+        .time {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+        .timeline-header {
+            margin: 0;
+            color: #333;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        /* Weekly Calendar Styles */
+        .weekly-calendar .day {
+            border: 1px solid #ddd;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background-color: #fff;
+        }
+        .date {
+            font-size: 14px;
+            font-weight: bold;
+            color: #333;
+        }
+        .event-desc {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Card Body Enhancements */
+        .card-body {
+            background-color: #f8f9fa; /* Light background for contrast */
+        }
+
+        /* General Card Enhancements */
+        .card {
+            margin-bottom: 30px; /* Spacing between cards */
+        }
+
+        .timeline-item {
+            display: none; /* Initially hide all items */
+        }
+
+        .timeline-item.visible {
+            display: block; /* Only show items marked as visible */
+        }
+
+        #expandScheduleBtn {
+            color: #333; /* Text color */
+            background-color: #ffcccb; /* Button background color */
+            border-color: #ffcccb; /* Border color if needed */
+            border-radius: 20px; /* Rounded corners for the button */
+            padding: 5px 15px; /* Padding inside the button */
+            font-weight: bold; /* Make the text bold */
+            transition: background-color 0.3s ease; /* Smooth transition for hover effect */
+        }
+
+        #expandScheduleBtn:hover, #expandScheduleBtn:focus {
+            background-color: #e6b3b3; /* Darker shade for hover state */
+            color: #333;
+            text-decoration: none; /* Remove underline on hover */
+        }
+
+        .weekly-calendar .carousel-item {
+            min-height: 250px; /* Ensure a consistent height */
+        }
+
+        .weekly-calendar .date {
+            font-weight: bold;
+        }
+
+        .weekly-calendar .event-desc {
+            margin-left: 10px; /* Indent event descriptions for readability */
+        }
+
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: #333; /* Customize color to match site */
+        }
+
+        .card .carousel-inner {
+            max-height: 300px; /* Limit the height of the carousel */
+            overflow-y: auto; /* Enable scrolling for overflow content */
+        }
+
+        .card .carousel-item {
+            font-size: 0.9rem; /* Adjust font size to fit content */
+        }
+
+        .carousel-control-prev, .carousel-control-next {
+            width: 5%; /* Adjust control size */
+        }
+
+
+        .btn-custom-prev, .btn-custom-next {
+            border: none;
+            background-color: transparent;
+            font-size: 24px;
+            color: #ffcccb; // Adjust to match your theme
+            cursor: pointer;
+        }
+
+        .carousel-content {
+            padding: 15px;
+            margin: 5px; // Adjust based on your design
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        }
+
+        .carousel-inner {
+            position: relative;
+        }
+
+        // Ensure the carousel fits within the flex container
+        #weeklyCarousel {
+            flex-grow: 1;
+        }
+
+
+
+
+
+    </style>
 </head>
 <body>
 
-    {% block content %}
-{% endblock %}
+{% include 'includes/navbar.html' %}
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
-<!-- MDB JS -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/5.0.0/mdb.min.js"></script>
+
+{% block content %}
+{% endblock %}
+{% include 'includes/footer.html' %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
 </body>
 </html>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Chart.js for graphs (if needed) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Implement custom JavaScript for dynamic interactions as needed -->
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if the canvas element is present
+            var ctx = document.getElementById('progressChart');
+            if (ctx) {
+                ctx = ctx.getContext('2d');
+                var progressChart = new Chart(ctx, {
+                    type: 'bar', // Can change to line, pie, etc.
+                    data: {
+                        labels: ['Math', 'Science', 'History', 'Literature'],
+                        datasets: [{
+                            label: 'Progress',
+                            data: [80, 70, 90, 85], // Example data
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initially show only the first 3 items
+    showInitialItems();
+
+    document.getElementById('expandScheduleBtn').addEventListener('click', toggleSchedule);
+});
+
+function showInitialItems() {
+    const items = document.querySelectorAll('.timeline-item');
+    items.forEach((item, index) => {
+        if (index < 3) item.classList.add('visible'); // Show first 3 items
+    });
+}
+
+function toggleSchedule() {
+    const items = document.querySelectorAll('.timeline-item');
+    const isExpanded = items[0].classList.contains('visible') && items[3] && items[3].classList.contains('visible');
+    const btn = document.getElementById('expandScheduleBtn');
+
+    if (isExpanded) {
+        // Collapse
+        items.forEach((item, index) => {
+            if (index >= 3) item.classList.remove('visible'); // Collapse items beyond the first 3
+        });
+        btn.innerHTML = '<i class="fas fa-chevron-down"></i>';
+    } else {
+        // Expand
+        items.forEach(item => item.classList.add('visible'));
+        btn.innerHTML = '<i class="fas fa-chevron-up"></i>';
+    }
+}
+
+$(document).ready(function(){
+    $('#weeklyCarousel').carousel({
+        interval: false // Do not auto-cycle
+    });
+});
+
+
+
+
+</script>

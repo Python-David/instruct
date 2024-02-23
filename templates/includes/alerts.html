@@ -1,20 +1,18 @@
-{% extends 'base.html' %}
-
 {% block content %}
 
 {% if messages %}
 
-<ul class="messages">
+<div class="messages">
     {% for message in messages %}
-    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-
-        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}{% endif %}
+    <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %} alert-dismissible fade show" role="alert" style="border-radius: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
         {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-
+        <!-- Close button using HTML character entity for "X" -->
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
     </div>
     {% endfor %}
-</ul>
+</div>
 {% endif %}
 
 <script>
@@ -22,10 +20,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
     const alerts = document.querySelectorAll('.alert');
     alerts.forEach((alert) => {
         setTimeout(() => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        }, 4000); // Closes the alert after 4 seconds
+            $(alert).alert('close');
+        }, 4000); // Closes the alert after 4 seconds using jQuery, as per Bootstrap 4 convention
     });
 });
 </script>
 {% endblock %}
+

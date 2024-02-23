@@ -25,6 +25,7 @@ class Lesson(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     week = models.IntegerField()
+    # goals
     duration = models.IntegerField(null=True, blank=True)  # Duration in minutes
 
     def __str__(self):
