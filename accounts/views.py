@@ -17,6 +17,8 @@ from .models import Account
 from .utils import send_email
 from scheduling.models import Schedule
 
+from curriculum.models import AcademicYear, Subject
+
 
 def login(request):
     if request.method != "POST":
@@ -37,31 +39,52 @@ def login(request):
 
 @login_required(login_url="login")
 def dashboard(request):
-    # Fetch today's date, adjusted for the current timezone
     today = timezone.localdate()
 
-    # Fetch today's lessons for the logged-in user
-    todays_lessons = Schedule.objects.filter(scheduled_date=today).select_related('lesson', 'lesson__subject')
+    # Fetch today's scheduled time slots for the logged-in user's lessons
+    todays_schedules = Schedule.objects.filter(
+        scheduled_date=today,
+        time_slot__lesson__lesson_plan__term__academic_year__user=request.user
+    ).select_related(
+        'time_slot',
+        'time_slot__lesson',
+        'time_slot__lesson__lesson_plan',
+        'time_slot__lesson__lesson_plan__subject',
+    ).order_by('time_slot__start_time')
 
-    # Calculate the start (Monday) and end (Sunday) of the week
-    start_week = today - timedelta(days=today.weekday())  # Monday
-    end_week = start_week + timedelta(days=6)  # Sunday
-
-    # Fetch lessons for the week and format the dates
-    weekly_lessons = Schedule.objects.filter(scheduled_date__range=[start_week, end_week]).select_related('lesson', 'lesson__subject')
-    formatted_weekly_lessons = [
+    # Format today's schedules for the template
+    todays_lessons_formatted = [
         {
-            'formatted_date': lesson.scheduled_date.strftime("%A, %b. %d, %Y"),
-            'lesson_title': lesson.lesson.title,
-            'subject_name': lesson.lesson.subject.name
+            'time_slot': f"{schedule.time_slot.start_time.strftime('%H:%M')} - {schedule.time_slot.end_time.strftime('%H:%M')}",
+            'lesson_title': schedule.time_slot.lesson.title,
+            'subject_name': schedule.time_slot.lesson.lesson_plan.subject.name,
         }
-        for lesson in weekly_lessons
+        for schedule in todays_schedules
     ]
 
-    # Pass formatted_weekly_lessons to the template
+    # Fetch academic year overviews for the logged-in user
+    academic_years = AcademicYear.objects.filter(
+        user=request.user
+    ).prefetch_related(
+        'curriculum__subjects',  # Assuming Curriculum has a related_name 'subjects' to Subject
+        'term_set'  # Fetch terms related to the academic year
+    )
+
+    academic_year_overviews = []
+    for year in academic_years:
+        terms = year.term_set.all()
+        for term in terms:
+            subjects = Subject.objects.filter(curriculum=year.curriculum).values_list('name', flat=True)
+            academic_year_overviews.append({
+                'term': f"Term {term.term_number} Overview",
+                'curriculum': year.curriculum.name,
+                'duration': f"{term.start_date.strftime('%b')} - {term.end_date.strftime('%b')}",
+                'subjects': list(subjects),
+            })
+
     context = {
-        'todays_lessons': todays_lessons,  # Assuming you'll handle today's lessons similarly or leave as is
-        'weekly_lessons': formatted_weekly_lessons,
+        'todays_lessons': todays_lessons_formatted,
+        'academic_year_overviews': academic_year_overviews,
     }
     return render(request, "accounts/dashboard.html", context)
 

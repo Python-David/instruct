@@ -5,6 +5,7 @@
 <div class="container mt-5">
     <h1>Welcome to Your Dashboard, {{ user.first_name }}</h1>
     <br>
+    <br>
     <div class="row">
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card">
@@ -14,12 +15,12 @@
                 <div class="card-body">
                     {% if todays_lessons %}
                     <div class="timeline" id="timeline">
-                        {% for schedule in todays_lessons %}
+                        {% for lesson in todays_lessons %}
                         <div class="timeline-item">
-                            <span class="time">{{ schedule.lesson.start_time | date:"H:i" }} - {{ schedule.lesson.end_time | date:"H:i" }}</span>
-                            <h3 class="timeline-header">{{ schedule.lesson.title }}</h3>
+                            <span class="time">{{ lesson.time_slot }}</span>
+                            <h3 class="timeline-header">{{ lesson.lesson_title }}</h3>
                             <div class="timeline-body">
-                                Subject: {{ schedule.lesson.subject.name }}
+                                Subject: {{ lesson.subject_name }}
                             </div>
                         </div>
                         {% endfor %}
@@ -29,7 +30,6 @@
                         <button class="btn btn-link" id="expandScheduleBtn" onclick="toggleSchedule()"><i
                                 class="fas fa-chevron-down"></i></button>
                     </div>
-
                     {% else %}
                     <p>No lessons scheduled for today.</p>
                     {% endif %}
@@ -41,48 +41,40 @@
         <div class="col-md-6 col-lg-4 mb-4">
             <div class="card h-100">
                 <div class="card-header">
-                    <h2>Weekly Overview</h2>
+                    <h2>Academic Year Overview</h2>
                 </div>
                 <div class="card-body">
+                    {% if academic_year_overviews %}
                     <div class="d-flex align-items-center">
-                        <!-- Custom Previous Button -->
-                        <button class="btn-custom-prev" onclick="$('#weeklyCarousel').carousel('prev')">
+                        <button class="btn-custom-prev" onclick="$('#academicYearCarousel').carousel('prev')">
                             <i class="fas fa-angle-left"></i>
                         </button>
-                        <div id="weeklyCarousel" class="carousel slide" data-ride="carousel">
+                        <div id="academicYearCarousel" class="carousel slide" data-ride="carousel">
                             <div class="carousel-inner">
-                                <!-- Content goes here -->
-                                <div class="carousel-item active">
+                                {% for overview in academic_year_overviews %}
+                                <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                     <div class="carousel-content">
-                                        <h4>Week 1: Introduction to Basics</h4>
-                                        <p>Monday: Introduction to Algebra - Basics</p>
-                                        <p>Wednesday: The History of Numbers</p>
-                                        <p>Friday: Understanding Variables</p>
+                                        <h4>{{ overview.term }}</h4>
+                                        <p>Curriculum: {{ overview.curriculum }}</p>
+                                        <p>Term Duration: {{ overview.duration }}</p>
+                                        <p>Subjects:</p>
+                                        <ul>
+                                            {% for subject in overview.subjects %}
+                                            <li>{{ subject }}</li>
+                                            {% endfor %}
+                                        </ul>
                                     </div>
                                 </div>
-                                <div class="carousel-item">
-                                    <div class="carousel-content">
-                                        <h4>Week 2: Diving Deeper</h4>
-                                        <p>Monday: Advanced Algebraic Techniques</p>
-                                        <p>Wednesday: The World of Geometry</p>
-                                        <p>Friday: Exploring Calculus</p>
-                                    </div>
-                                </div>
-                                <div class="carousel-item">
-                                    <div class="carousel-content">
-                                        <h4>Week 3: Practical Applications</h4>
-                                        <p>Monday: Mathematics in Engineering</p>
-                                        <p>Wednesday: Statistics in Daily Life</p>
-                                        <p>Friday: Computer Science and Math</p>
-                                    </div>
-                                </div>
+                                {% endfor %}
                             </div>
                         </div>
-                        <!-- Custom Next Button -->
-                        <button class="btn-custom-next" onclick="$('#weeklyCarousel').carousel('next')">
+                        <button class="btn-custom-next" onclick="$('#academicYearCarousel').carousel('next')">
                             <i class="fas fa-angle-right"></i>
                         </button>
                     </div>
+                    {% else %}
+                    <p>No academic year overviews available.</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
